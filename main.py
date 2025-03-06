@@ -40,9 +40,9 @@ with open('servers.csv', mode='r', newline='', encoding='utf-8') as csvfile:
 drawio = DrawioRack()
 
 for rack in racks:
-    drawio.createRack(rack['RackName'], rack['RackHeight'])
+    drawio.create_rack(rack['RackName'], rack['RackHeight'])
 
 for server in servers:
-    drawio.createServer(server['ServerName'], server['Rack'], server['Unit'], server['Height'], server['IP'], server['用途'], server['状态'], server['其他属性'])
+    drawio.create_server(server['ServerName'], server['Rack'], server['Unit'], server['Height'], server['IP'], server['用途'], server['状态'], server['其他属性'])
 
-drawio.saveToFile()
+drawio.save_to_file()
