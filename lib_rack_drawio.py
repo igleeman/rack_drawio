@@ -8,7 +8,8 @@ class DrawioRack():
         self._createBaseElement()
         self.firstRackX = 120
         self.firstRackY = 60
-        self.firstRackMarginTop = 22
+        self.rackMarginTop = 21
+        self.rackMarginBottom = 22
         
         self.rackSpace = 120
 
@@ -77,7 +78,8 @@ class DrawioRack():
         rack = ET.SubElement(self.root_element, "mxCell")
         rack.set("id", random_id)
         rack.set("value", rackName)
-        style = "strokeColor=#666666;html=1;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;outlineConnect=0;shadow=0;dashed=0;shape=mxgraph.rackGeneral.rackCabinet3;fillColor2=#f4f4f4;container=1;collapsible=0;childLayout=rack;allowGaps=1;marginLeft=33;marginRight=9;marginTop=21;marginBottom=22;textColor=#666666;numDisp=descend;"
+        style = "strokeColor=#666666;html=1;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;outlineConnect=0;shadow=0;dashed=0;shape=mxgraph.rackGeneral.rackCabinet3;fillColor2=#f4f4f4;container=1;collapsible=0;childLayout=rack;allowGaps=1;marginLeft=33;marginRight=9;"
+        style = style + "marginTop=" + str(self.rackMarginTop) + ";marginBottom=" + str(self.rackMarginBottom) + ";textColor=#666666;numDisp=descend;"
         style = style + "rackUnitSize=" + str(self.rackUnitHeight) + ";"
         rack.set("style", style)
         rack.set("vertex", "1")
@@ -107,7 +109,7 @@ class DrawioRack():
         server_geometry = ET.SubElement(server, "mxGeometry")
         server_geometry.set("x", "33")
         thisRackUnitCount = self.rackTable[rackName][1]
-        y = self.firstRackMarginTop + (thisRackUnitCount - floorInRack - height + 1) * self.rackUnitHeight
+        y = self.rackMarginTop + (thisRackUnitCount - floorInRack - height + 1) * self.rackUnitHeight
         server_geometry.set("y", str(y))
         server_geometry.set("width", "162")
         server_geometry.set("height", str(height * self.rackUnitHeight))
