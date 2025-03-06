@@ -122,9 +122,12 @@ class DrawioRack:
                 server_object.set(key, value)
 
         server = ET.SubElement(server_object, "mxCell")
+        shape_unit = 1
+        if height >= 2:
+            shape_unit = 2
         style = (
             f"strokeColor=#666666;html=1;labelPosition=right;align=left;spacingLeft=15;shadow=0;dashed=0;"
-            f"outlineConnect=0;shape=mxgraph.rack.general.{height}u_rack_server;"
+            f"outlineConnect=0;shape=mxgraph.rack.general.{shape_unit}u_rack_server;"
         )
         server.set("style", style)
         server.set("vertex", "1")
