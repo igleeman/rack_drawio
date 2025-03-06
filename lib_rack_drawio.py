@@ -92,13 +92,34 @@ class DrawioRack():
         rack_geometry.set("height", str(rackHeight))
         rack_geometry.set("as", "geometry")
 
-    def createServer(self, serverName, rackName, floorInRack, height):
+    def createServer(self, serverName, rackName, floorInRack, height, ip = '', purpose = '', status = '', otherData = ''):
         # 检查机柜是否已经存在
         if rackName not in self.rackTable:
             self.createRack(rackName)
-        server = ET.SubElement(self.root_element, "mxCell")
-        server.set("id", "server_" + self._generate_random_id())
-        server.set("value", serverName)
+        rackId = self.rackTable[rackName][0]
+
+        server_id = "server_" + self._generate_random_id()
+        
+        server_object = ET.SubElement(self.root_element, "object")
+        server_object.set("id", "server_" + self._generate_random_id())
+        server_object.set("label", serverName)
+        if ip != '':
+            server_object.set("IP", ip)
+        if purpose != '':
+            server_object.set("用途", purpose)
+        if ip != '':
+            server_object.set("状态", status)
+
+        if otherData != '':
+            pairs = otherData.split('|')
+
+            for pair in pairs:
+                key, value = pair.split(':')
+                key = key.strip()
+                value = value.strip()
+                server_object.set(key, value)
+
+        server = ET.SubElement(server_object, "mxCell")
         style = "strokeColor=#666666;html=1;labelPosition=right;align=left;spacingLeft=15;shadow=0;dashed=0;outlineConnect=0;"
         if height == 1:
             style = style + "shape=mxgraph.rack.general.1u_rack_server;"
@@ -106,6 +127,8 @@ class DrawioRack():
             style = style + "shape=mxgraph.rack.general.2u_rack_server;"
         server.set("style", style)
         server.set("vertex", "1")
+        server.set("parent", rackId)
+
         server_geometry = ET.SubElement(server, "mxGeometry")
         server_geometry.set("x", "33")
         thisRackUnitCount = self.rackTable[rackName][1]
@@ -115,4 +138,4 @@ class DrawioRack():
         server_geometry.set("height", str(height * self.rackUnitHeight))
         server_geometry.set("as", "geometry")
 
-        server.set("parent", self.rackTable[rackName][0])
+

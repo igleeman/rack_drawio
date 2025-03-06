@@ -22,20 +22,18 @@ with open('servers.csv', mode='r', newline='', encoding='utf-8') as csvfile:
     reader = csv.DictReader(csvfile)
     
     for row in reader:
-        try:
-            height = int(row['高度'].strip())
-        except ValueError:
-            height = 1  # 或者设置为其他默认值
-        try:
-            unit = int(row['机柜内位置'].strip())
-        except ValueError:
-            unit = 1  # 或者设置为其他默认值
-            
+        def get_value(value, default = ''):
+            return default if value is None else value.strip()
+        
         server_info = {
-            'ServerName': row['服务器名'].strip(),
-            'Rack': row['所在机柜'].strip(),
-            'Unit': unit,
-            'Height': height
+            'ServerName': get_value(row.get('服务器名')),
+            'Rack': get_value(row.get('所在机柜')),
+            'Unit': int(get_value(row.get('机柜内位置'), '1')),
+            'Height': int(get_value(row.get('高度'), '1')),
+            'IP': get_value(row.get('IP')),
+            '用途': get_value(row.get('用途')),
+            '状态': get_value(row.get('状态'),),
+            '其他属性': get_value(row.get('其他属性'))
         }
         servers.append(server_info)
 
@@ -45,6 +43,6 @@ for rack in racks:
     drawio.createRack(rack['RackName'], rack['RackHeight'])
 
 for server in servers:
-    drawio.createServer(server['ServerName'], server['Rack'], server['Unit'], server['Height'])
+    drawio.createServer(server['ServerName'], server['Rack'], server['Unit'], server['Height'], server['IP'], server['用途'], server['状态'], server['其他属性'])
 
 drawio.saveToFile()
