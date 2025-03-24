@@ -14,6 +14,11 @@ class DrawioRack:
         self.rack_unit_height = 15
         self.rack_width = 204
         self.rack_table = {}
+        # 定义设备图标映射
+        self.device_icon_mapping = {
+            "server": "mxgraph.rack.dell.dell_poweredge_2u", # 自定义图标
+            "router": "mxgraph.rack.hpe_aruba.switches.jl9826a_5412r_92g_poeplus_4sfp_zl2_switch",  # 自定义图标
+        }
 
     def save_to_file(self, filename="rack_diagram.drawio"):
         tree = ET.ElementTree(self.root)
@@ -95,23 +100,23 @@ class DrawioRack:
         rack_geometry.set("height", str(rack_height))
         rack_geometry.set("as", "geometry")
 
-    def create_server(self, server_name, rack_name, floor_in_rack, height, ip='', purpose='', status='', other_data=''):
+    def create_device(self, device_name, device_type, rack_name, floor_in_rack, height, ip='', purpose='', status='', other_data=''):
         if rack_name not in self.rack_table:
             self.create_rack(rack_name)
         rack_id = self.rack_table[rack_name][0]
 
-        server_id = "server_" + self._generate_random_id()
+        device_id = f"{device_type}_{self._generate_random_id()}"
 
-        server_object = ET.SubElement(self.root_element, "object")
-        server_object.set("id", server_id)
-        server_object.set("label", server_name)
+        device_object = ET.SubElement(self.root_element, "object")
+        device_object.set("id", device_id)
+        device_object.set("label", device_name)
 
         if ip:
-            server_object.set("IP", ip)
+            device_object.set("IP", ip)
         if purpose:
-            server_object.set("用途", purpose)
+            device_object.set("用途", purpose)
         if status:
-            server_object.set("状态", status)
+            device_object.set("状态", status)
 
         if other_data:
             pairs = other_data.split('|')
@@ -119,25 +124,23 @@ class DrawioRack:
                 key, value = pair.split(':')
                 key = key.strip()
                 value = value.strip()
-                server_object.set(key, value)
+                device_object.set(key, value)
 
-        server = ET.SubElement(server_object, "mxCell")
-        shape_unit = 1
-        if height >= 2:
-            shape_unit = 2
+        device = ET.SubElement(device_object, "mxCell")
+        icon_shape = self.device_icon_mapping.get(device_type, "mxgraph.rack.general.1u_rack_server")
         style = (
             f"strokeColor=#666666;html=1;labelPosition=right;align=left;spacingLeft=15;shadow=0;dashed=0;"
-            f"outlineConnect=0;shape=mxgraph.rack.general.{shape_unit}u_rack_server;"
+            f"outlineConnect=0;shape={icon_shape};"
         )
-        server.set("style", style)
-        server.set("vertex", "1")
-        server.set("parent", rack_id)
+        device.set("style", style)
+        device.set("vertex", "1")
+        device.set("parent", rack_id)
 
-        server_geometry = ET.SubElement(server, "mxGeometry")
-        server_geometry.set("x", "33")
+        device_geometry = ET.SubElement(device, "mxGeometry")
+        device_geometry.set("x", "33")
         this_rack_unit_count = self.rack_table[rack_name][1]
         y = self.rack_margin_top + (this_rack_unit_count - floor_in_rack - height + 1) * self.rack_unit_height
-        server_geometry.set("y", str(y))
-        server_geometry.set("width", "162")
-        server_geometry.set("height", str(height * self.rack_unit_height))
-        server_geometry.set("as", "geometry")
+        device_geometry.set("y", str(y))
+        device_geometry.set("width", "162")
+        device_geometry.set("height", str(height * self.rack_unit_height))
+        device_geometry.set("as", "geometry")
